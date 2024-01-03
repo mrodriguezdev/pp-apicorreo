@@ -30,6 +30,7 @@ public class EmailUserCase implements EmailInputPort {
         emailResponse.setNombre(emailDTO.getNombre());
         emailResponse.setCorreo(emailDTO.getCorreo());
         emailResponse.setAsunto(emailDTO.getAsunto());
+        emailResponse.setMensaje(emailDTO.getMensaje());
         emailResponse.setDomain(this.apicorreo.webAppDomain());
         emailResponse.setCurrentyear(LocalDate.now().getYear());
         return emailResponse;
