@@ -8,9 +8,16 @@ import jakarta.inject.Inject;
 import mrodriguezdev.me.apicorreo.domains.configuration.Apicorreo;
 import mrodriguezdev.me.apicorreo.domains.models.EmailResponse;
 import mrodriguezdev.me.apicorreo.domains.ports.out.EmailOutputPort;
+import mrodriguezdev.me.apicorreo.infraestructure.exceptions.BadRequestException;
+import mrodriguezdev.me.apicorreo.infraestructure.exceptions.InternalServerErrorException;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @ApplicationScoped
 public class EmailAdapter implements EmailOutputPort {
+
+    private final Logger logger = Logger.getLogger(EmailAdapter.class.getName());
 
     @Inject
     Template correo_template;
@@ -23,9 +30,23 @@ public class EmailAdapter implements EmailOutputPort {
 
     @Override
     public void sendMail(EmailResponse emailResponse) {
-        String content = this.generateHtmlContent(emailResponse);
-        Mail mail = this.buildEmail(emailResponse, content);
-        this.mailer.send(mail);
+        try {
+            this.validateEmailParameters(emailResponse);
+            String content = this.generateHtmlContent(emailResponse);
+            Mail mail = this.buildEmail(emailResponse, content);
+            this.mailer.send(mail);
+        } catch (Exception e) {
+            this.logger.log(Level.SEVERE, "Unexpected error while processing the email sending.", e);
+            throw new InternalServerErrorException("An unexpected error occurred while processing the email.");
+        }
+    }
+
+    private void validateEmailParameters(EmailResponse emailResponse) {
+        if(emailResponse == null ||
+                emailResponse.getAsunto() == null ||
+                emailResponse.getMensaje() == null ||
+                emailResponse.getNombre() == null ||
+                emailResponse.getCorreo() == null) throw new BadRequestException("Missing information in the contact form. Please review the resource documentation.");
     }
 
     private String generateHtmlContent(EmailResponse emailResponse) {
