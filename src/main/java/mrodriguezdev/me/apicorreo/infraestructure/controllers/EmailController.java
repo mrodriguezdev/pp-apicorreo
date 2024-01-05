@@ -21,6 +21,6 @@ public class EmailController {
     @POST
     public Response sendMail(EmailDTO emailDTO) {
         this.emailInputPort.sendMail(emailDTO);
-        return Response.ok().build();
+        return Response.ok().entity("Email sent successfully").build();
     }
 }

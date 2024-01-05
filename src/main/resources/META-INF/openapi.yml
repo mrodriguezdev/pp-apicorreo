@@ -1,0 +1,103 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Servicio de Comunicación por Correo Electrónico
+  description: |
+    API diseñada para simplificar la comunicación a través del envío de correos electrónicos.
+    Utiliza una estructura de Datos de Transferencia de Objetos (DTO) que requiere campos específicos
+    para facilitar la interacción y el intercambio de información.
+  contact:
+    name: mrodriguezdev
+    email: mrodriguezdev.me@gmail.com
+    url: https://mrodriguezdev.me
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  servers:
+    - url: http://localhost:8080
+tags:
+  - name: email
+    description: Operaciones relacionadas con el envío de correos
+paths:
+  /email:
+    post:
+      summary: Enviar Correo Electrónico
+      description: >
+        Endpoint para enviar correos electrónicos mediante el envío de un objeto DTO.
+        Este servicio permite la comunicación al recibir datos de un formulario de contacto
+        y enviar esa información por correo electrónico.
+      operationId: sendEmail
+      tags:
+        - email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailDTO'
+            example:
+              nombre: "Nombre del Remitente"
+              correo: "remitente@dominio.com"
+              asunto: "Asunto del Correo"
+              mensaje: "Contenido del Correo"
+      responses:
+        '200':
+          description: Correo electrónico enviado éxitosamente
+          content:
+            application/json:
+              example:
+                message: "Email sent successfully"
+        '400':
+          description: Información faltante en el formulario de contacto. Por favor, revise la documentación del recurso.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomExceptionResponse'
+              example:
+                description: "Missing information in the contact form. Please review the resource documentation."
+                status: 400
+        '500':
+          description: Se produjo un error inesperado al procesar el correo electrónico.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomExceptionResponse'
+              example:
+                description: "An unexpected error occurred while processing the email."
+                status: 500
+
+components:
+  schemas:
+    CustomExceptionResponse:
+      type: object
+      properties:
+        content:
+          type: object
+          description: Contenido específico del error
+        description:
+          type: string
+          description: Descripción detallada del error
+        error:
+          type: string
+          description: Tipo o nombre del error
+        status:
+          type: integer
+          format: int32
+          description: Código de estado HTTP
+    EmailDTO:
+      type: object
+      properties:
+        nombre:
+          type: string
+          description: Nombre del remitente del correo
+        correo:
+          type: string
+          format: email
+          description: Correo electrónico del remitente
+          example: "remitente@dominio.com"
+        asunto:
+          type: string
+          description: Asunto del correo
+        mensaje:
+          type: string
+          description: Cuerpo del correo electrónico
