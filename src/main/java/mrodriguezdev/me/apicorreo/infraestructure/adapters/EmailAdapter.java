@@ -35,6 +35,9 @@ public class EmailAdapter implements EmailOutputPort {
             String content = this.generateHtmlContent(emailResponse);
             Mail mail = this.buildEmail(emailResponse, content);
             this.mailer.send(mail);
+        } catch (BadRequestException e) {
+            this.logger.log(Level.WARNING, "Validation error while processing the email sending.", e);
+            throw e;
         } catch (Exception e) {
             this.logger.log(Level.SEVERE, "Unexpected error while processing the email sending.", e);
             throw new InternalServerErrorException("An unexpected error occurred while processing the email.");
