@@ -24,4 +24,17 @@ RUN chmod 775 /work /work/application \
 EXPOSE 8080
 USER 1001
 
+# ===== Cors =====
+ENV CORS_ORIGIN=https://mrodriguezdev.me
+
+# ===== Mailer =====
+ENV HOST_CORREO=smtp.gmail.com
+ENV PUERTO_HOST=587
+ENV MAIL_CC_ADDRES=marioguzman_95@hotmail.com
+ENV MAIL_ADDRES=mrodriguezdev.me@gmail.com
+ENV MAIL_PASSWORD=cojwxzlhbttkxccj
+
+# ===== Generales =====
+ENV WEB_APP_DOMAIN=https://mrodriguezdev.me
+
 CMD ["./application", "-Dquarkus.http.host=0.0.0.0"]
