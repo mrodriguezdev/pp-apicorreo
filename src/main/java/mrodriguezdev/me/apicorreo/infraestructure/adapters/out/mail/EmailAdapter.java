@@ -1,15 +1,15 @@
-package mrodriguezdev.me.apicorreo.infraestructure.adapters;
+package mrodriguezdev.me.apicorreo.infraestructure.adapters.out.mail;
 
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.Mailer;
 import io.quarkus.qute.Template;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import mrodriguezdev.me.apicorreo.domains.configuration.Apicorreo;
-import mrodriguezdev.me.apicorreo.domains.models.EmailResponse;
-import mrodriguezdev.me.apicorreo.domains.ports.out.EmailOutputPort;
-import mrodriguezdev.me.apicorreo.infraestructure.exceptions.BadRequestException;
-import mrodriguezdev.me.apicorreo.infraestructure.exceptions.InternalServerErrorException;
+import mrodriguezdev.me.apicorreo.domain.configuration.Apicorreo;
+import mrodriguezdev.me.apicorreo.domain.model.email.EmailResponse;
+import mrodriguezdev.me.apicorreo.infraestructure.ws.BadRequestException;
+import mrodriguezdev.me.apicorreo.infraestructure.ws.InternalServerErrorException;
+import mrodriguezdev.me.apicorreo.infraestructure.ports.out.EmailOutputPort;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,7 +23,7 @@ public class EmailAdapter implements EmailOutputPort {
     Template correo_template;
 
     @Inject
-    Apicorreo apicorreo;
+    Apicorreo configs;
 
     @Inject
     Mailer mailer;
@@ -33,7 +33,7 @@ public class EmailAdapter implements EmailOutputPort {
         try {
             this.validateEmailParameters(emailResponse);
             String content = this.generateHtmlContent(emailResponse);
-            Mail mail = this.buildEmail(emailResponse, content);
+            Mail mail = this.buildEmail(content);
             this.mailer.send(mail);
         } catch (BadRequestException e) {
             this.logger.log(Level.WARNING, "Validation error while processing the email sending.", e);
@@ -56,9 +56,9 @@ public class EmailAdapter implements EmailOutputPort {
         return correo_template.data("email", emailResponse).render();
     }
 
-    private Mail buildEmail(EmailResponse emailResponse, String contenidoHtml) {
-        Mail mail = Mail.withHtml(this.apicorreo.bussinesEmail(), "Nuevo mensaje del formulario de contacto", contenidoHtml);
-        mail.addCc(this.apicorreo.personalEmail());
+    private Mail buildEmail(String contenidoHtml) {
+        Mail mail = Mail.withHtml(this.configs.bussinesEmail(), "Nuevo mensaje del formulario de contacto", contenidoHtml);
+        mail.addCc(this.configs.personalEmail());
         return mail;
     }
 }
