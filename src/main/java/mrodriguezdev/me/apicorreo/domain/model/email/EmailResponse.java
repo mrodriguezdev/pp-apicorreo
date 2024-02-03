@@ -1,15 +1,22 @@
-package mrodriguezdev.me.apicorreo.domains.models;
+package mrodriguezdev.me.apicorreo.domain.model.email;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.smallrye.common.constraint.NotNull;
 
 @RegisterForReflection
-public class EmailDTO {
+public class EmailResponse {
+    @NotNull
     private String nombre;
+    @NotNull
     private String correo;
+    @NotNull
     private String asunto;
+    @NotNull
     private String mensaje;
+    private String domain;
+    private int currentyear;
 
-    public EmailDTO() {
+    public EmailResponse() {
     }
 
     public String getNombre() {
@@ -42,5 +49,21 @@ public class EmailDTO {
 
     public void setMensaje(String mensaje) {
         this.mensaje = mensaje;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public int getCurrentyear() {
+        return currentyear;
+    }
+
+    public void setCurrentyear(int currentyear) {
+        this.currentyear = currentyear;
     }
 }
