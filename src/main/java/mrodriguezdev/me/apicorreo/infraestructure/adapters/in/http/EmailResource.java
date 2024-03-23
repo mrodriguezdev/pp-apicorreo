@@ -7,20 +7,20 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import mrodriguezdev.me.apicorreo.domain.model.email.EmailDTO;
-import mrodriguezdev.me.apicorreo.infraestructure.ports.in.EmailInputPort;
+import mrodriguezdev.me.apicorreo.domain.model.email.EmailMessage;
+import mrodriguezdev.me.apicorreo.domain.ports.in.EmailInputPort;
 
 @Path("email")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class EmailResource {
 
     @Inject
     EmailInputPort emailInputPort;
 
     @POST
-    public Response sendMail(EmailDTO emailDTO) {
-        this.emailInputPort.sendMail(emailDTO);
-        return Response.ok().entity("Email sent successfully").build();
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response sendMail(EmailMessage emailMessage) {
+        this.emailInputPort.sendMail(emailMessage);
+        return Response.ok().entity("EmailMessage sent successfully").build();
     }
 }

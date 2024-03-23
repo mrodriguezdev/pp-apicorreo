@@ -1,4 +1,4 @@
-package mrodriguezdev.me.apicorreo.domain.configuration;
+package mrodriguezdev.me.apicorreo.infraestructure.configuration;
 
 import io.smallrye.config.ConfigMapping;
 

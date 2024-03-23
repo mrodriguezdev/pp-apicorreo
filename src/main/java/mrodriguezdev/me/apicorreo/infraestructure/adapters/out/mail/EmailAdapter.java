@@ -5,12 +5,15 @@ import io.quarkus.mailer.Mailer;
 import io.quarkus.qute.Template;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import mrodriguezdev.me.apicorreo.domain.configuration.Apicorreo;
-import mrodriguezdev.me.apicorreo.domain.model.email.EmailResponse;
+import mrodriguezdev.me.apicorreo.domain.model.email.EmailMessage;
+import mrodriguezdev.me.apicorreo.infraestructure.configuration.Apicorreo;
+import mrodriguezdev.me.apicorreo.domain.model.email.EmailTemplateData;
+import mrodriguezdev.me.apicorreo.infraestructure.utils.ValidationUtil;
 import mrodriguezdev.me.apicorreo.infraestructure.ws.BadRequestException;
 import mrodriguezdev.me.apicorreo.infraestructure.ws.InternalServerErrorException;
-import mrodriguezdev.me.apicorreo.infraestructure.ports.out.EmailOutputPort;
+import mrodriguezdev.me.apicorreo.domain.ports.out.EmailOutputPort;
 
+import java.time.LocalDate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -29,32 +32,36 @@ public class EmailAdapter implements EmailOutputPort {
     Mailer mailer;
 
     @Override
-    public void sendMail(EmailResponse emailResponse) {
+    public void sendMail(EmailMessage emailMessage) {
         try {
-            this.validateEmailParameters(emailResponse);
-            String content = this.generateHtmlContent(emailResponse);
+            ValidationUtil.validar(emailMessage);
+            String content = this.generateHtmlContent(this.generateEmailTemplate(emailMessage));
             Mail mail = this.buildEmail(content);
             this.mailer.send(mail);
-        } catch (BadRequestException e) {
-            this.logger.log(Level.WARNING, "Validation error while processing the email sending.", e);
-            throw e;
+        } catch (BadRequestException bre) {
+            this.logger.log(Level.WARNING, "Validation failed.", bre);
+            throw new BadRequestException(bre.getMessage());
         } catch (Exception e) {
-            this.logger.log(Level.SEVERE, "Unexpected error while processing the email sending.", e);
-            throw new InternalServerErrorException("An unexpected error occurred while processing the email.");
+            this.logger.log(Level.SEVERE, "Unexpected error while processing the emailMessage sending.", e);
+            throw new InternalServerErrorException("An unexpected error occurred while processing the emailMessage.");
         }
     }
 
-    private void validateEmailParameters(EmailResponse emailResponse) {
-        if(emailResponse == null ||
-                emailResponse.getAsunto() == null ||
-                emailResponse.getMensaje() == null ||
-                emailResponse.getNombre() == null ||
-                emailResponse.getCorreo() == null) throw new BadRequestException("Missing information in the contact form. Please review the resource documentation.");
+    private EmailTemplateData generateEmailTemplate(EmailMessage emailMessage) {
+        EmailTemplateData emailTemplateData = new EmailTemplateData();
+        emailTemplateData.name = emailMessage.name;
+        emailTemplateData.email = emailMessage.email;
+        emailTemplateData.subject = emailMessage.subject;
+        emailTemplateData.message = emailMessage.message;
+        emailTemplateData.domain = this.configs.webApp().domain();
+        emailTemplateData.currentyear = LocalDate.now().getYear();
+        return emailTemplateData;
     }
 
-    private String generateHtmlContent(EmailResponse emailResponse) {
-        return correo_template.data("email", emailResponse).render();
+    private String generateHtmlContent(EmailTemplateData emailTemplateData) {
+        return correo_template.data("email", emailTemplateData).render();
     }
+
 
     private Mail buildEmail(String contenidoHtml) {
         Mail mail = Mail.withHtml(this.configs.bussinesEmail(), "Nuevo mensaje del formulario de contacto", contenidoHtml);
