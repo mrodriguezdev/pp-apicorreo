@@ -34,7 +34,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmailDTO'
+              $ref: '#/components/schemas/EmailMessage'
             example:
               nombre: "Nombre del Remitente"
               correo: "remitente@dominio.com"
@@ -46,7 +46,7 @@ paths:
           content:
             application/json:
               example:
-                message: "Email sent successfully"
+                message: "EmailMessage sent successfully"
         '400':
           description: Información faltante en el formulario de contacto. Por favor, revise la documentación del recurso.
           content:
