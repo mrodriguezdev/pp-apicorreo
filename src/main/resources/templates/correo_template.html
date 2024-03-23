@@ -1,4 +1,4 @@
-{@mrodriguezdev.me.apicorreo.domain.model.email.EmailResponse email}
+{@mrodriguezdev.me.apicorreo.domain.model.email.EmailTemplateData email}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -93,11 +93,11 @@
 <body>
     <section class="container">
         <h1>Detalles del Correo Electrónico</h1>
-        <p><strong>Nombre:</strong> {email.nombre} </p>
-        <p><strong>Correo Electrónico:</strong> {email.correo} </p>
-        <p><strong>Asunto:</strong> {email.asunto} </p>
+        <p><strong>Nombre:</strong> {email.name} </p>
+        <p><strong>Correo Electrónico:</strong> {email.email} </p>
+        <p><strong>Asunto:</strong> {email.subject} </p>
         <p><strong>Mensaje:</strong></p>
-        <p> {email.mensaje} </p>
+        <p> {email.message} </p>
 
         <div class="footer">
             <hr class="footer_line">
